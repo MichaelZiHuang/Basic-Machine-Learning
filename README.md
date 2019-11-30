@@ -96,4 +96,40 @@ X_train /= 255.0
 X_test /= 255.0
 </pre></code>
 
+This part is a bit rough to understand. First, let's talk about the first two lines. First, it turnns the X sets into float32 point, I believe this is done for sizes and ease of math since initiailly, the are integers
+Then, it divides it by 255.0. This is effectively one-hot encoding. One-hot is a way ML algorithms to easily give something a categorical value. An example would be assigning a bunch of car companies, each would have a different categorical value.
 
+<pre><code>
+Y_train = np_utils.to_categorical(Y_train)
+Y_test = np_utils.to_categorical(Y_test)
+class_num = Y_test.shape[1]
+</pre></code>
+
+Here's the same thing for the Y setup. I should note the "class num part". Essentially, it denotes how many neurons it shouild compress down to at the final layer. In other words, how the neuron should take its input and transform its output. 
+
+<pre><code>
+model = Sequential()
+model.add(Conv2D(32, (3, 3), input_shape=X_train.shape[1:], activation='relu',padding='same'))
+model.add(Dropout(0.2))
+model.add(BatchNormalization())
+</pre></code>
+
+Probably one of the most interesting parts. Let's start with the "Sequential" line. It's, surprisingly, straight forward. Essentially, the sequential model is exactly what it sounds like, it will linearly go through layers to achieve its goal. 
+
+Later, we add the "Conv2d" layer. This is called the convolutional layer. The convolution layer essentially takes your pre-processed data and assigns various levels of importance of bias to each section. This is called "feature maps", it takes the pixels of your image by taking several different filters, then relating similar parts to another. The activation function, essentially, is a way for us to get an output of a node. 
+
+Dropout, quite literally, drops out 20% of the data we recieve. 
+
+Batch Normalization is fairly straight fowrad. It tries to fight against "internal covariate shift". In other words, data likes to work with consistent data, but the inputs tend to be of different distributions, this is a good way to force inputs to have about the same distribution each time. In other words, let's say X had some maping to Y and it learned some distribution and algorithm. Then, X gets new inputs and its distribution changes, then the learning algorithm must retrain itself with the new distributions. 
+
+Here's the best explanation for Batch NM I can give.
+First, it normalizes the data by subtracting the batch mean and dividing by its standard deviation
+Then, it adds two trainable parameters, a trainable mean and standard deivation. These are the weights that let us remove "denormalization" which our SGD works with. 
+
+<pre><code>
+model.add(MaxPooling2D(pool_size=(2, 2)))
+</pre></code>
+
+This final bit adds "pooling". This, essentially, takes our data and attempts to take only the most relevant pieces while throwing away the nonnecessary. This helps with overfitting.
+
+To be completely honest, I am going to stop this program for now. I don't truely understand this, let's return to this later.
