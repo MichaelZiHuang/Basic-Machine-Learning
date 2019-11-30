@@ -69,3 +69,31 @@ Notice that it matches the 6 length of our arrays AND the loss continually decre
 
 Overall, this is a good mathematical tutorial, we will need to move on to image processing later. 
 
+<h2>Cifar Tutorial</h2>
+This is the Cifar tutorial I found, this uses pure keras instead of Tensorflow, this uses image processing to solve our problems. Notably, this uses the Cifar dataset, a pre-processed Keras dataset, we do NOT need to process our data, I think the next tutorial we will try to process some data for our future projects. Before I
+close this one, I do want to see if I convert the file into tensorflow format. 
+
+<pre><code>
+#import tensorflow as tf
+import numpy as np
+#from tensorflow import keras
+from keras.models import Sequential
+from keras.utils import np_utils
+from keras.layers import Dense, Dropout, Flatten, BatchNormalization, Activation
+from keras.layers.convolutional import Conv2D, MaxPooling2D
+from keras.constraints import maxnorm
+from keras.datasets import cifar10
+</pre></code>
+
+Here's our import statement. Notice that I've included tensorflow. There is a noticeable conflict between TF and Keras, this stopped happening once I stopped the conflict.
+
+<pre><code>
+(X_train, Y_train), (X_test, Y_test) = cifar10.load_data()
+
+X_train = X_train.astype('float32')
+X_test = X_test.astype('float32')
+X_train /= 255.0
+X_test /= 255.0
+</pre></code>
+
+
