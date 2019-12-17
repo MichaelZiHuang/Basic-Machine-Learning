@@ -11,7 +11,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from random import seed
 from random import random
 
-from keras.models import Sequential
+from keras.models import Sequential, model_from_json
 from keras.utils import to_categorical
 from keras.layers import Dense, Dropout, Flatten, BatchNormalization, Activation
 from keras.layers.convolutional import Conv2D, MaxPooling2D
@@ -24,7 +24,7 @@ import sys
 #direct = "datasets_dogs_vs_cats"
 #subdirs = ['train/', 'test/'] 
 #for subdir in subdirs:
-#    labeldirs = ['dogs/', 'cats/']
+#   labeldirs = ['dogs/', 'cats/']
 #    for labeldir in labeldirs:
 #        newdir = folder + subdir + labeldir
 #        makedirs(newdir, exist_ok=True)
@@ -72,6 +72,12 @@ def directProcessing(): # Correctly moves files to a different directory
 
 def define_model():
     model = Sequential()
+
+    model.add(Conv2D(16, (3, 3), activation='relu',  kernel_initializer='he_uniform', padding='same', input_shape=(200, 200, 3)))
+    model.add(MaxPooling2D(2, 2))
+    model.add(Dropout(0.2))
+   
+
     model.add(Conv2D(32, (3, 3), activation='relu',  kernel_initializer='he_uniform', padding='same', input_shape=(200, 200, 3)))
     model.add(MaxPooling2D(2, 2))
     model.add(Dropout(0.2))
@@ -80,9 +86,21 @@ def define_model():
     model.add(MaxPooling2D(2, 2))
     model.add(Dropout(0.2))
 
+    model.add(Conv2D(128, (3, 3), activation='relu',  kernel_initializer='he_uniform', padding='same', input_shape=(200, 200, 3)))
+    model.add(MaxPooling2D(2, 2))
+    model.add(Dropout(0.2))
+
+    model.add(Conv2D(256, (3, 3), activation='relu',  kernel_initializer='he_uniform', padding='same', input_shape=(200, 200, 3)))
+    model.add(MaxPooling2D(2, 2))
+    model.add(Dropout(0.2))
+
+
     model.add(Flatten())
     model.add(Dense(128, activation='relu', kernel_initializer='he_uniform'))
     model.add(Dropout(0.2))
+    model.add(Dense(256, activation='relu', kernel_initializer='he_uniform'))
+    model.add(Dropout(0.2))
+
     model.add(Dense(1, activation='sigmoid'))
     #model.add(Dropout(0.2))
 
@@ -109,20 +127,26 @@ def summarize_diagnostics(history):
 
 def runMemes():
     model = define_model() # Gets our CNN, 1 layer model
+
     datagen = ImageDataGenerator(rescale=1.0/255.0)
-    train = datagen.flow_from_directory(folder + 'train/', class_mode='binary', batch_size=64, target_size=(200, 200))
+
+    train = datagen.flow_from_directory(folder + 'train/', class_mode='binary', batch_size=64, target_size=(200, 200))# BIG NOTE, it is LOOKING for these sizes, that's why it's able to grab the dogs and cats folders.
     test = datagen.flow_from_directory(folder + 'test/', class_mode='binary', batch_size=64, target_size=(200, 200))
-    print("Test1")
-    history = model.fit_generator(train, steps_per_epoch=len(train), validation_data=test, validation_steps=len(test), epochs=2, verbose=1)
-    print("Test2")
+    history = model.fit_generator(train, steps_per_epoch=len(train), validation_data=test, validation_steps=len(test), epochs=50  , verbose=1)
     _, acc = model.evaluate_generator(test, steps=(len(test)), verbose=1)
-    print("Test3")
     print('> %.3f' % (acc * 100.0))
-    print("Test4")
+
+    model_save = model.to_json()
+    with open("model.json", "w") as json_file:
+        json_file.write(model_save)
+    model.save_weights("model.hl5")
     summarize_diagnostics(history)
-    print("Test5")
+
 
 
 folder = "C:/Users/Michael Huang/Documents/GitHub/Basic-Machine-Learning/"
 
-runMemes()
+if __name__ == "__main__":
+    runMemes()
+
+
