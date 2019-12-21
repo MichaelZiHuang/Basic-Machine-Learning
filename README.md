@@ -133,3 +133,65 @@ model.add(MaxPooling2D(pool_size=(2, 2)))
 This final bit adds "pooling". This, essentially, takes our data and attempts to take only the most relevant pieces while throwing away the nonnecessary. This helps with overfitting.
 
 To be completely honest, I am going to stop this program for now. I don't truely understand this, let's return to this later.
+
+<h2>Day ?</h2>
+Wow, it's been a long time since I've updated this readme. Anyways, I looked into making a basic binary machine learning project based on Dog vs. Cat Analysis. First, we choose binary since we really don't care 
+about the breeds. We only care, generally, if its 1 thing or another. The explanation for this code is very similar to the last project, so I'll be more brief on certain parts.
+<pre><code>
+opt = SGD(lr=0.001, momentum=0.9)
+model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
+<pre></code>
+A very simple line actually. First, starting with line 1, essentially it establishes how fast the program will "learn", or decide its learning. The slower, the more testing it typically needed (I reduced it to 0.0001 and saw a massive decrease in accuracy). The next decided the type itn was going to check, as mentioned before, I went with Binary since, well, we only care about two things. 
+
+<pre><code>
+def directProcessing(): # Correctly moves files to a different directory
+    seed(1)
+    val_ratio = .25
+    path = "C:/Users/Michael Huang/Documents/GitHub/Basic-Machine-Learning/train/"
+    dst_dir_base = "C:/Users/Michael Huang/Documents/GitHub/Basic-Machine-Learning/"
+    for file in listdir(path):
+        f = path + file
+        dst_dir = "train/"
+        if random() < val_ratio:
+            dst_dir = "test/"
+        if file.startswith('cat.'): # Important, if you do NOT denote cat., it will overlap with the cats/ folder
+            des = dst_dir_base + dst_dir + 'cats/' + file
+            copyfile(f, des)
+        if file.startswith('dog.'):
+            des = dst_dir_base + dst_dir + 'dogs/' + file
+            copyfile(f, des)
+<pre></code>
+
+Easily the most interesting line here. So, what this does is, essentially, take our photos and processes them by moving them into small directories. The reason for this is that so can make more tests with the same files. We want to prevent overfitting, so by assuring we are not just getting really good at the training set, we can try to be better. The code also contains a method that preprocesses the data (resizing and all), but takes a whopping 12GB of ram, so we'll avoid that. 
+
+<pre><code>
+def runMemes():
+    model = define_model() # Gets our CNN, 1 layer model
+
+    datagen = ImageDataGenerator(rescale=1.0/255.0)
+
+    train = datagen.flow_from_directory(folder + 'train/', class_mode='binary', batch_size=64, target_size=(200, 200))# BIG NOTE, it is LOOKING for these sizes, that's why it's able to grab the dogs and cats folders.
+    test = datagen.flow_from_directory(folder + 'test/', class_mode='binary', batch_size=64, target_size=(200, 200))
+    history = model.fit_generator(train, steps_per_epoch=len(train), validation_data=test, validation_steps=len(test), epochs=90  , verbose=1)
+    _, acc = model.evaluate_generator(test, steps=(len(test)), verbose=1)
+    print('> %.3f' % (acc * 100.0))
+
+    model.save("my_model.hl5")
+<pre></code>
+
+This line trains the model. Essentially it pulls from the two directories we just created begins training the model. Notice that verbose 1 is set, this is done so I can read out the epoch data.
+
+<pre><code>
+
+if __name__ == "__main__":
+    #runMemes()
+    model = load_model("my_model.hl5")
+    img = load_img(catlocation, target_size=(200, 200))
+    img = img_to_array(img)
+    img = img.reshape(-1, 200, 200, 3)
+    #img = np.asarray(img, dtype ="int32")
+
+    test = int(model.predict(img)[0])
+    print(test)    
+<pre></code>
+Last runner line. Essentially, this runs our saved model, converts an image I've specified to a np array, then predicts it. It worked on my cat. 
