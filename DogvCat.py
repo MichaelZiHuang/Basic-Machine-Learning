@@ -11,12 +11,16 @@ from keras.preprocessing.image import ImageDataGenerator
 from random import seed
 from random import random
 
-from keras.models import Sequential, model_from_json
+from keras.models import Sequential, model_from_json, load_model, save_model
 from keras.utils import to_categorical
 from keras.layers import Dense, Dropout, Flatten, BatchNormalization, Activation
 from keras.layers.convolutional import Conv2D, MaxPooling2D
 from keras.optimizers import SGD
 
+from keras.backend import resize_images, reshape
+
+
+import json
 import sys
 
 
@@ -132,21 +136,39 @@ def runMemes():
 
     train = datagen.flow_from_directory(folder + 'train/', class_mode='binary', batch_size=64, target_size=(200, 200))# BIG NOTE, it is LOOKING for these sizes, that's why it's able to grab the dogs and cats folders.
     test = datagen.flow_from_directory(folder + 'test/', class_mode='binary', batch_size=64, target_size=(200, 200))
-    history = model.fit_generator(train, steps_per_epoch=len(train), validation_data=test, validation_steps=len(test), epochs=50  , verbose=1)
+    history = model.fit_generator(train, steps_per_epoch=len(train), validation_data=test, validation_steps=len(test), epochs=90  , verbose=1)
     _, acc = model.evaluate_generator(test, steps=(len(test)), verbose=1)
     print('> %.3f' % (acc * 100.0))
 
-    model_save = model.to_json()
-    with open("model.json", "w") as json_file:
-        json_file.write(model_save)
-    model.save_weights("model.hl5")
-    summarize_diagnostics(history)
+    model.save("my_model.hl5")
+
+    #model_save = model.to_json()
+    #with open("model.json", "w") as json_file:
+    #    json_file.write(model_save)
+    #model.save_weights("model.hl5")
+    #summarize_diagnostics(history)
 
 
 
 folder = "C:/Users/Michael Huang/Documents/GitHub/Basic-Machine-Learning/"
+catlocation = folder + "cat.jpg"
 
 if __name__ == "__main__":
-    runMemes()
+    #runMemes()
+    model = load_model("my_model.hl5")
+    img = load_img(catlocation, target_size=(200, 200))
+    img = img_to_array(img)
+    img = img.reshape(-1, 200, 200, 3)
+    #img = np.asarray(img, dtype ="int32")
 
+    test = int(model.predict(img)[0])
+    print(test)    
+
+    #test = model_from_json(model_json)
+    #test.load_weights('model.hl5')
+    #datagen = ImageDataGenerator(rescale=1.0/255.0)
+    #test = datagen.flow_from_directory(folder + 'test/', class_mode='binary', batch_size=64, target_size=(200, 200))
+    #X, Y = model.evaluate_generator(test, steps=len(test), verbose = 0)
+    #print("%.3f" % Y)
+    #print(X)
 
