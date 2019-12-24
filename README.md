@@ -160,7 +160,7 @@ def directProcessing(): # Correctly moves files to a different directory
         if file.startswith('dog.'):
             des = dst_dir_base + dst_dir + 'dogs/' + file
             copyfile(f, des)
-<pre></code>
+</pre></code>
 
 Easily the most interesting line here. So, what this does is, essentially, take our photos and processes them by moving them into small directories. The reason for this is that so can make more tests with the same files. We want to prevent overfitting, so by assuring we are not just getting really good at the training set, we can try to be better. The code also contains a method that preprocesses the data (resizing and all), but takes a whopping 12GB of ram, so we'll avoid that. 
 
@@ -177,11 +177,11 @@ def runMemes():
     print('> %.3f' % (acc * 100.0))
 
     model.save("my_model.hl5")
-<pre></code>
+</pre></code>
 
 This line trains the model. Essentially it pulls from the two directories we just created begins training the model. Notice that verbose 1 is set, this is done so I can read out the epoch data.
 
-<pre><code>
+</pre><code>
 
 if __name__ == "__main__":
     #runMemes()
@@ -193,5 +193,5 @@ if __name__ == "__main__":
 
     test = int(model.predict(img)[0])
     print(test)    
-<pre></code>
+</pre></code>
 Last runner line. Essentially, this runs our saved model, converts an image I've specified to a np array, then predicts it. It worked on my cat. 
