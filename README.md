@@ -181,7 +181,7 @@ def runMemes():
 
 This line trains the model. Essentially it pulls from the two directories we just created begins training the model. Notice that verbose 1 is set, this is done so I can read out the epoch data.
 
-</pre><code>
+<pre><code>
 
 if __name__ == "__main__":
     #runMemes()
