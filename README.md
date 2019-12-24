@@ -140,7 +140,7 @@ about the breeds. We only care, generally, if its 1 thing or another. The explan
 <pre><code>
 opt = SGD(lr=0.001, momentum=0.9)
 model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
-<pre></code>
+</pre></code>
 A very simple line actually. First, starting with line 1, essentially it establishes how fast the program will "learn", or decide its learning. The slower, the more testing it typically needed (I reduced it to 0.0001 and saw a massive decrease in accuracy). The next decided the type itn was going to check, as mentioned before, I went with Binary since, well, we only care about two things. 
 
 <pre><code>
